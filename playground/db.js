@@ -59,3 +59,15 @@ const post = new Post({
 // }).catch((error) => {
 //   console.log('error ', error);
 // });
+
+// Обновление поста
+// Post.findByIdAndUpdate('5c15118de5359014d371f1b8', {$set: {
+//   title: 'NewTitle',
+//   content: 'So good content',
+//   author: 'Braun T'
+// }}, {new: true})
+//   .then(function(updatedPost) {
+//     console.log('updatedPost', updatedPost);
+//   }).catch(function(error) {
+//     console.log(error);
+//   });

@@ -1,20 +1,12 @@
 var express = require('express');
-var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
 
-mongoose.connect('mongodb://localhost:27017/mern', function(error) {
-  if (error) {
-    console.log('error happened ', error);
-    throw error;
-  } else {
-    console.log('connected to db succesfully');
-  }
-});
+var mongoose = require('./db/mongoose');
+var postRoute = require('./route/postRoute');
 
 var app = express();
-
-app.get('/', function(request, response) {
-  response.send('Hello, world');
-});
+app.use(bodyParser.json());
+app.use('/', postRoute);
 
 var port = 3000;
 app.listen(port, function() {
