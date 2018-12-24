@@ -80,7 +80,31 @@ app.delete('/api/posts/:postId', function(request, response) {
 
 //Обновление поста
 app.put('/api/posts/:postId', function(request, response) {
-  //TODO ДОПИСАТЬ МЕТОД . Похоже на app.post('/api/posts')
+  var requestBody = request.body;
+  var title = requestBody.title;
+  var content = requestBody.content;
+  var author = requestBody.author;
+  var postId = request.params.postId;
+
+  Post.findByIdAndUpdate(postId, {$set: {
+    title: title,
+    content: content,
+    author: author
+  }}, {new: true})
+  .then(function(updatedPost) {
+    if (updatedPost == null) {
+      response.status(400).send();
+    } else {
+      response.status(201).send({
+        updatePost: updatedPost
+      })
+    }
+  }).catch(function(error) {
+    console.log(error);
+    response.status(400).send({
+      error: error
+    });
+  });
 });
 
 
