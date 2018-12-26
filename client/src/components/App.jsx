@@ -1,6 +1,9 @@
 import React from 'react';
 import Header from './Header';
 import Row from './Row';
+import { fetchPosts } from "../actions/actions";
+import { connect } from 'react-redux';
+
 
 class App extends React.Component {
   constructor(props) {
@@ -25,21 +28,14 @@ class App extends React.Component {
   //   })
   // }
 
+  componentDidMount() {
+    console.log('this.props ', this.props);
+    this.props.fetchPosts();
+  }
+
   render() {
     const now = this.state.now.toLocaleTimeString();
-
-    const posts = [
-      {
-        title: 'Chelovek-pauk',
-        content: '18+',
-        author: 'Stephen Faigy'
-      },
-      {
-        title: 'Zhelezniy chelovek',
-        content: '13+',
-        author: 'Dzheiymi Lanister'
-      }
-    ];
+    const posts = this.props.postsState.posts;
 
     return (
       <div>
@@ -50,6 +46,7 @@ class App extends React.Component {
           {
             posts.map(function(post) {
               return <Row
+                key={post._id}
                 title={post.title}
                 content={post.content}
                 author={post.author}
@@ -63,4 +60,12 @@ class App extends React.Component {
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    postsState: state.postsState
+  }
+};
+
+export default connect(
+  mapStateToProps,
+  { fetchPosts: fetchPosts })(App);
