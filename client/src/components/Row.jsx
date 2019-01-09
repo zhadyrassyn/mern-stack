@@ -21,7 +21,7 @@ class Row extends Component {
     const content = this.props.content;
 
     return (
-      <li>{title}, {content}, {author}
+      <li className="list-group-item">{title}, {content}, {author}
         <button onClick={this.deletePost.bind(this)}>Delete post</button>
         <button onClick={this.editPost.bind(this)}>Edit post</button>
       </li>
