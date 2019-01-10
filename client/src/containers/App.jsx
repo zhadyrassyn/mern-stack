@@ -2,7 +2,12 @@ import React from 'react';
 import Header from './../components/Header';
 import Row from './../components/Row';
 import { connect } from 'react-redux';
-import { fetchPosts} from "../actions/actions";
+import {
+  fetchPosts,
+  updatePost,
+  deletePost,
+  savePost
+} from "../actions/actions";
 
 import './../styles/index.css';
 
@@ -42,19 +47,7 @@ class App extends React.Component {
   };
 
   handleDelete(deleteId) {
-    console.log('handleDelete ', deleteId);
-    // axios.delete('http://localhost:3001/api/posts/' + deleteId)
-    //   .then((success) => {
-    //     console.log(success);
-    //     if (success.status === 200) {
-    //       const posts = this.state.posts.filter((post) => post._id !== deleteId);
-    //       this.setState({
-    //         posts: posts
-    //       })
-    //     }
-    //   }).catch((error) => {
-    //     console.log(error);
-    //   });
+    this.props.deletePost(deleteId);
   };
 
   handleEdit = (id, author, title, content) => {
@@ -114,25 +107,14 @@ class App extends React.Component {
       content: addContent
     };
 
-    // axios.post('http://localhost:3001/api/posts', newPost)
-    //   .then((success) => {
-    //     console.log('success ', success);
-    //     if (success.status === 200) {
-    //       const savedPost = success.data.savedPost;
-    //       const posts = this.state.posts;
-    //       posts.push(savedPost);
-    //       this.setState({
-    //         posts: posts,
-    //         showAddModal: false,
-    //         addAuthor: '',
-    //         addTitle: '',
-    //         addContent: '',
-    //       })
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
+    this.props.savePost(newPost, () => {
+      this.setState({
+        showAddModal: false,
+        addAuthor: '',
+        addTitle: '',
+        addContent: '',
+      });
+    });
   };
 
   handleEditPost = (event) => {
@@ -148,35 +130,17 @@ class App extends React.Component {
       content: editContent,
     };
 
-    // axios.put('http://localhost:3001/api/posts/' + editPostId, updatePost)
-    //   .then((success) => {
-    //     console.log('success ', success);
-    //     if (success.status === 201) {
-    //       const savedPost = success.data.updatePost;
-    //       let posts = this.state.posts;
-    //       const index = posts.findIndex(post => post._id === savedPost._id);
-    //       console.log(posts);
-    //       console.log(index);
-    //       if (index >= 0) {
-    //         posts.splice(index, 1, savedPost);
-    //       }
-    //
-    //       this.setState({
-    //         posts: posts,
-    //         showEditModal: false,
-    //         editAuthor: '',
-    //         editTitle: '',
-    //         editContent: '',
-    //       });
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
+    this.props.updatePost(editPostId, updatePost, () => {
+      this.setState({
+        showEditModal: false,
+        editAuthor: '',
+        editTitle: '',
+        editContent: '',
+      });
+    });
   };
 
   render() {
-    console.log(this.props);
     const posts = this.props.posts;
     const showAddModal = this.state.showAddModal;
     const addAuthor = this.state.addAuthor;
@@ -279,6 +243,18 @@ const mapDispatchToProps = (dispatch) => {
     fetchPosts: () => {
       dispatch(fetchPosts())
     },
+
+    savePost: (newPost, successCallback) => {
+      dispatch(savePost(newPost, successCallback))
+    },
+
+    deletePost: (postId) => {
+      dispatch(deletePost(postId))
+    },
+
+    updatePost: (id, updateData, successCallback) => {
+      dispatch(updatePost(id, updateData, successCallback))
+    }
   }
 };
 
