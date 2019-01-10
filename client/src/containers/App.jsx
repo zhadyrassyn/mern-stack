@@ -1,7 +1,8 @@
 import React from 'react';
-import Header from './Header';
-import Row from './Row';
-import axios from 'axios';
+import Header from './../components/Header';
+import Row from './../components/Row';
+import { connect } from 'react-redux';
+import { fetchPosts} from "../actions/actions";
 
 import './../styles/index.css';
 
@@ -10,7 +11,6 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      posts: [],
       showAddModal: false,
       addAuthor: '',
       addTitle: '',
@@ -24,15 +24,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    axios('http://localhost:3001/api/posts')
-      .then((success) => {
-        this.setState({
-          posts: success.data.posts
-        })
-      })
-      .catch(function(error) {
-        console.log(error);
-      })
+    this.props.fetchPosts();
   }
 
   renderPosts = (posts) => {
@@ -51,18 +43,18 @@ class App extends React.Component {
 
   handleDelete(deleteId) {
     console.log('handleDelete ', deleteId);
-    axios.delete('http://localhost:3001/api/posts/' + deleteId)
-      .then((success) => {
-        console.log(success);
-        if (success.status === 200) {
-          const posts = this.state.posts.filter((post) => post._id !== deleteId);
-          this.setState({
-            posts: posts
-          })
-        }
-      }).catch((error) => {
-        console.log(error);
-      });
+    // axios.delete('http://localhost:3001/api/posts/' + deleteId)
+    //   .then((success) => {
+    //     console.log(success);
+    //     if (success.status === 200) {
+    //       const posts = this.state.posts.filter((post) => post._id !== deleteId);
+    //       this.setState({
+    //         posts: posts
+    //       })
+    //     }
+    //   }).catch((error) => {
+    //     console.log(error);
+    //   });
   };
 
   handleEdit = (id, author, title, content) => {
@@ -122,25 +114,25 @@ class App extends React.Component {
       content: addContent
     };
 
-    axios.post('http://localhost:3001/api/posts', newPost)
-      .then((success) => {
-        console.log('success ', success);
-        if (success.status === 200) {
-          const savedPost = success.data.savedPost;
-          const posts = this.state.posts;
-          posts.push(savedPost);
-          this.setState({
-            posts: posts,
-            showAddModal: false,
-            addAuthor: '',
-            addTitle: '',
-            addContent: '',
-          })
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    // axios.post('http://localhost:3001/api/posts', newPost)
+    //   .then((success) => {
+    //     console.log('success ', success);
+    //     if (success.status === 200) {
+    //       const savedPost = success.data.savedPost;
+    //       const posts = this.state.posts;
+    //       posts.push(savedPost);
+    //       this.setState({
+    //         posts: posts,
+    //         showAddModal: false,
+    //         addAuthor: '',
+    //         addTitle: '',
+    //         addContent: '',
+    //       })
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
   };
 
   handleEditPost = (event) => {
@@ -156,35 +148,36 @@ class App extends React.Component {
       content: editContent,
     };
 
-    axios.put('http://localhost:3001/api/posts/' + editPostId, updatePost)
-      .then((success) => {
-        console.log('success ', success);
-        if (success.status === 201) {
-          const savedPost = success.data.updatePost;
-          let posts = this.state.posts;
-          const index = posts.findIndex(post => post._id === savedPost._id);
-          console.log(posts);
-          console.log(index);
-          if (index >= 0) {
-            posts.splice(index, 1, savedPost);
-          }
-
-          this.setState({
-            posts: posts,
-            showEditModal: false,
-            editAuthor: '',
-            editTitle: '',
-            editContent: '',
-          });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    // axios.put('http://localhost:3001/api/posts/' + editPostId, updatePost)
+    //   .then((success) => {
+    //     console.log('success ', success);
+    //     if (success.status === 201) {
+    //       const savedPost = success.data.updatePost;
+    //       let posts = this.state.posts;
+    //       const index = posts.findIndex(post => post._id === savedPost._id);
+    //       console.log(posts);
+    //       console.log(index);
+    //       if (index >= 0) {
+    //         posts.splice(index, 1, savedPost);
+    //       }
+    //
+    //       this.setState({
+    //         posts: posts,
+    //         showEditModal: false,
+    //         editAuthor: '',
+    //         editTitle: '',
+    //         editContent: '',
+    //       });
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
   };
 
   render() {
-    const posts = this.state.posts;
+    console.log(this.props);
+    const posts = this.props.posts;
     const showAddModal = this.state.showAddModal;
     const addAuthor = this.state.addAuthor;
     const addTitle = this.state.addTitle;
@@ -275,4 +268,18 @@ class App extends React.Component {
   }
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    posts: state.posts.posts,
+  }
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchPosts: () => {
+      dispatch(fetchPosts())
+    },
+  }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
