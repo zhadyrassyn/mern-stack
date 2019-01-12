@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import defaultPostImage from './../images/default-image.png';
 
 class Row extends Component {
   constructor(props) {
@@ -24,9 +25,14 @@ class Row extends Component {
     const title = this.props.title;
     const author = this.props.author;
     const content = this.props.content;
+    const image = this.props.image;
 
     return (
-      <li className="list-group-item">{title}, {content}, {author}
+      <li className="list-group-item">
+        { image &&
+          <img src={image} alt="Post image" className="d-block postImage"/>
+        }
+        {title}, {content}, {author}
         <button onClick={this.deletePost.bind(this)} className="btn btn-danger ml-2"><i className="fas fa-trash-alt"></i></button>
         <button onClick={this.editPost.bind(this)} className="btn btn-info ml-2"><i className="fas fa-edit"></i></button>
       </li>

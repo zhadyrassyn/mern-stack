@@ -20,6 +20,7 @@ class App extends React.Component {
       addAuthor: '',
       addTitle: '',
       addContent: '',
+      addFile: null,
       showEditModal: false,
       editAuthor: '',
       editTitle: '',
@@ -40,6 +41,7 @@ class App extends React.Component {
         content={post.content}
         author={post.author}
         _id={post._id}
+        image={post.image}
         handleDelete={this.handleDelete.bind(this)}
         handleEdit={this.handleEdit.bind(this)}
       />
@@ -96,23 +98,31 @@ class App extends React.Component {
     })
   };
 
+  handleFileChange = (event) => {
+    this.setState({
+      addFile: event.target.files[0],
+    });
+  };
+
   handleAddPost = (event) => {
     const addAuthor = this.state.addAuthor;
     const addTitle = this.state.addTitle;
     const addContent = this.state.addContent;
+    const addFile = this.state.addFile;
 
-    const newPost = {
-      author: addAuthor,
-      title: addTitle,
-      content: addContent
-    };
+    const formData = new FormData();
+    formData.append('author', addAuthor);
+    formData.append('title', addTitle);
+    formData.append('content', addContent);
+    formData.append('file', addFile);
 
-    this.props.savePost(newPost, () => {
+    this.props.savePost(formData, () => {
       this.setState({
         showAddModal: false,
         addAuthor: '',
         addTitle: '',
         addContent: '',
+        addFile: null,
       });
     });
   };
@@ -177,6 +187,11 @@ class App extends React.Component {
               <div className="input-group my-3">
                 <textarea type="text" className="form-control" name="addContent" placeholder="Content..."
                           onChange={this.handleModalInputsChange.bind(this)} value={addContent}/>
+              </div>
+
+              <div className="input-group mb-3">
+                <label htmlFor="postImage">Choose post image</label>
+                <input type="file" className="form-control-file" id="postImage" onChange={this.handleFileChange.bind(this)}/>
               </div>
             </div>
             <div className="modal-footer">

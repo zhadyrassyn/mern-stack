@@ -27,8 +27,8 @@ export const fetchPosts = () => (dispatch, getState) => {
     })
 };
 
-export const savePost = (post, successCallback) => (dispatch, getState) => {
-  axios.post('http://localhost:3001/api/posts', post)
+export const savePost = (formData, successCallback) => (dispatch, getState) => {
+  axios.post('http://localhost:3001/api/posts', formData)
     .then((success) => {
       if (success.status === 200) {
         dispatch({
