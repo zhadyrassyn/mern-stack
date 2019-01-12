@@ -7,11 +7,14 @@ import {
   SAVE_POST_SUCCESS,
   SAVE_POST_ERROR,
   UPDATE_POST_SUCCESS,
-  UPDATE_POST_ERROR
+  UPDATE_POST_ERROR,
+  FETCH_POST_SUCCESS,
+  FETCH_POST_ERROR
 } from "../types/types";
 
 const initialState = {
   posts: [],
+  fetchedPost: null
 };
 
 const posts = (state = initialState, action) => {
@@ -59,6 +62,17 @@ const posts = (state = initialState, action) => {
       };
 
     case UPDATE_POST_ERROR:
+      return {
+        ...initialState,
+        error: action.message,
+      };
+
+    case FETCH_POST_SUCCESS:
+      return {
+        ...initialState,
+        fetchedPost: action.data,
+      };
+    case FETCH_POST_ERROR:
       return {
         ...initialState,
         error: action.message,

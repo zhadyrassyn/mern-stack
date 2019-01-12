@@ -6,10 +6,28 @@ import {
   SAVE_POST_SUCCESS,
   SAVE_POST_ERROR,
   UPDATE_POST_SUCCESS,
-  UPDATE_POST_ERROR
+  UPDATE_POST_ERROR,
+  FETCH_POST_SUCCESS,
+  FETCH_POST_ERROR,
 } from "../types/types";
 
 import axios from 'axios';
+
+export const fetchPost = (id) => (dispatch) => {
+  axios('http://localhost:3001/api/posts/' + id)
+    .then((success) => {
+      dispatch({
+        type: FETCH_POST_SUCCESS,
+        data: success.data.post
+      })
+    })
+    .catch(function(error) {
+      dispatch({
+        type: FETCH_POST_ERROR,
+        error: error.message || "ERROR HAPPENED"
+      })
+    })
+};
 
 export const fetchPosts = () => (dispatch, getState) => {
   axios('http://localhost:3001/api/posts')

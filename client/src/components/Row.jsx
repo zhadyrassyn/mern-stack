@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import defaultPostImage from './../images/default-image.png';
+import { Link } from 'react-router-dom';
 
 class Row extends Component {
   constructor(props) {
@@ -26,6 +27,9 @@ class Row extends Component {
     const author = this.props.author;
     const content = this.props.content;
     const image = this.props.image;
+    const id = this.props._id;
+
+    const postDetailLink = "/posts/" + id
 
     return (
       <li className="list-group-item">
@@ -35,6 +39,7 @@ class Row extends Component {
         {title}, {content}, {author}
         <button onClick={this.deletePost.bind(this)} className="btn btn-danger ml-2"><i className="fas fa-trash-alt"></i></button>
         <button onClick={this.editPost.bind(this)} className="btn btn-info ml-2"><i className="fas fa-edit"></i></button>
+        <Link to={postDetailLink} className="btn btn-light ml-2"><i className="fas fa-arrow-right"></i></Link>
       </li>
     );
   }
