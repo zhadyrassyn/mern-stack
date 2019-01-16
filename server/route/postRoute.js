@@ -1,5 +1,10 @@
 var app = require('express').Router();
 var Post = require('./../db/model/post');
+const multer = require('multer');
+const path = require('path');
+
+const uploadDir = path.join(__dirname, "../uploads");
+const upload = multer({ dest: uploadDir });
 
 // Вытащить все посты
 // localhost:3000/api/posts
@@ -14,7 +19,8 @@ app.get('/api/posts', function(request, response, next) {
   });
 });
 
-app.post('/api/posts', function(request, response) {
+app.post('/api/posts', upload.single('file'), function(request, response) {
+  console.log(request.file);
   var requestBody = request.body;
   var title = requestBody.title;
   var content = requestBody.content;
