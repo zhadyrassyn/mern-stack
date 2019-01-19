@@ -7,11 +7,14 @@ import {
   EDIT_POST_SUCCESS,
   EDIT_POST_ERROR,
   DELETE_POST_SUCCESS,
-  DELETE_POST_ERROR
+  DELETE_POST_ERROR,
+  FETCH_POST_SUCCESS,
+  FETCH_POST_ERROR
 } from "../types/types";
 
 const initialState = {
   posts: [],
+  fetchedPost: null
 };
 
 const posts = (state = initialState, action) => {
@@ -60,6 +63,16 @@ const posts = (state = initialState, action) => {
       return {
         ...state,
         error: action.error
+      };
+    case FETCH_POST_SUCCESS:
+      return {
+        ...initialState,
+        fetchedPost: action.data,
+      };
+    case FETCH_POST_ERROR:
+      return {
+        ...initialState,
+        error: action.message,
       };
     default:
       return state;

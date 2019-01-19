@@ -6,9 +6,27 @@ import {
   EDIT_POST_SUCCESS,
   EDIT_POST_ERROR,
   DELETE_POST_SUCCESS,
-  DELETE_POST_ERROR
+  DELETE_POST_ERROR,
+  FETCH_POST_SUCCESS,
+  FETCH_POST_ERROR
 } from "../types/types";
 import axios from 'axios';
+
+export const fetchPost = (id) => (dispatch) => {
+  axios('http://localhost:3001/api/posts/' + id)
+    .then((success) => {
+      dispatch({
+        type: FETCH_POST_SUCCESS,
+        data: success.data.post
+      })
+    })
+    .catch(function(error) {
+      dispatch({
+        type: FETCH_POST_ERROR,
+        error: error.message || "ERROR HAPPENED"
+      })
+    })
+};
 
 export const fetchPosts = () => (dispatch, getState) => {
 
@@ -28,8 +46,8 @@ export const fetchPosts = () => (dispatch, getState) => {
     })
 };
 
-export const savePost = (newPost, changeState) => (dispatch) => {
-  axios.post('http://localhost:3001/api/posts', newPost)
+export const savePost = (formData, changeState) => (dispatch) => {
+  axios.post('http://localhost:3001/api/posts', formData)
     .then((success) => {
       if (success.status === 200) {
         const savedPost = success.data.savedPost;
@@ -84,7 +102,7 @@ export const deletePost = (id) => (dispatch) => {
     }).catch((error) => {
       console.log(error);
       dispatch({
-        type: EDIT_POST_ERROR,
+        type: DELETE_POST_ERROR,
         error: error.message || "ERROR HAPPENED"
       });
     });

@@ -2,6 +2,8 @@ var app = require('express').Router();
 var Post = require('./../db/model/post');
 const multer = require('multer');
 const path = require('path');
+const base64Img = require('base64-img');
+const fs = require('fs');
 
 const uploadDir = path.join(__dirname, "../uploads");
 const upload = multer({ dest: uploadDir });
@@ -20,7 +22,6 @@ app.get('/api/posts', function(request, response, next) {
 });
 
 app.post('/api/posts', upload.single('file'), function(request, response) {
-  console.log(request.file);
   var requestBody = request.body;
   var title = requestBody.title;
   var content = requestBody.content;
@@ -32,17 +33,40 @@ app.post('/api/posts', upload.single('file'), function(request, response) {
     author
   };
 
-  var post = new Post(savePost);
+  let filePath = '';
+  // let filePath = request.file && request.file.path || "";
+  try {
+    filePath = request.file.path;
+  }  catch(e) {
+    console.log(e);
+  }
 
-  post.save().then((savedPost) => {
-    response.send({
-      savedPost: savedPost
+  base64Img.base64(filePath, function(err, data) {
+    if (err) {
+      console.log(err);
+    } else {
+      savePost.image = data;
+    }
+
+    if (filePath.length !== 0) {
+      fs.unlink(filePath, function(err) {
+        if (err) {
+          console.log(err);
+        }
+      });
+    }
+
+    var post = new Post(savePost);
+
+    post.save().then((savedPost) => {
+      response.send({
+        savedPost: savedPost
+      });
+    }, (error) => {
+      console.log(error);
+      response.status(400).send();
     });
-  }, (error) => {
-    console.log(error);
-    response.status(400).send();
-  })
-
+  });
 });
 
 // Вытащить элеметы по ID

@@ -20,6 +20,7 @@ class App extends React.Component {
       editTitle: '',
       editContent: '',
       editPostId: 0,
+      saveImage: null,
     };
   }
 
@@ -34,12 +35,19 @@ class App extends React.Component {
         title={post.title}
         content={post.content}
         author={post.author}
+        image={post.image}
         _id={post._id}
         handleDelete={this.handleDelete.bind(this)}
         handleEdit={this.handleEdit.bind(this)}
       />
     })
   };
+
+  handleFileChange(event) {
+    this.setState({
+      saveImage: event.target.files[0]
+    });
+  }
 
   handleDelete(deleteId) {
     this.props.deletePost(deleteId);
@@ -95,19 +103,21 @@ class App extends React.Component {
     const addAuthor = this.state.addAuthor;
     const addTitle = this.state.addTitle;
     const addContent = this.state.addContent;
+    const saveImage = this.state.saveImage;
 
-    const newPost = {
-      author: addAuthor,
-      title: addTitle,
-      content: addContent
-    };
+    var formData = new FormData();
+    formData.append("author", addAuthor);
+    formData.append("title", addTitle);
+    formData.append("content", addContent);
+    formData.append("file", saveImage);
 
-    this.props.savePost(newPost, () => {
+    this.props.savePost(formData, () => {
       this.setState({
         showAddModal: false,
         addAuthor: '',
         addTitle: '',
         addContent: '',
+        saveImage: null
       });
     });
   };
@@ -211,6 +221,11 @@ class App extends React.Component {
               <div className="input-group my-3">
                 <textarea type="text" className="form-control" name="editContent" placeholder="Content..."
                           onChange={this.handleModalInputsChange.bind(this)} value={editContent}/>
+              </div>
+              <div className="input-group mb-3">
+                <input type="file" className="form-control-file"
+                  onChange={this.handleFileChange.bind(this)}
+                />
               </div>
             </div>
             <div className="modal-footer">

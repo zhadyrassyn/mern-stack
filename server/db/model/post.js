@@ -12,7 +12,8 @@ const Post = mongoose.model('Post', {
   createdAt: {
     type: Date,
     default: new Date()
-  }
+  },
+  image: String,
 });
 
 module.exports = Post;
