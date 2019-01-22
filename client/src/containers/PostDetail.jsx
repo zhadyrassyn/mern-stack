@@ -16,7 +16,6 @@ class PostDetail extends Component {
     const post = this.props.fetchedPost;
     const postImage = post && post.image ? post.image : defaultImg;
 
-
     return (
       <div>
         <Link to="/" className="btn btn-light"><i className="fas fa-arrow-left"></i></Link>

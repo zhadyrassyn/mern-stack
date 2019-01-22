@@ -66,12 +66,12 @@ const posts = (state = initialState, action) => {
       };
     case FETCH_POST_SUCCESS:
       return {
-        ...initialState,
+        ...state,
         fetchedPost: action.data,
       };
     case FETCH_POST_ERROR:
       return {
-        ...initialState,
+        ...state,
         error: action.message,
       };
     default:
