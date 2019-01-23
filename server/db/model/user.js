@@ -47,7 +47,7 @@ userSchema.methods.compare = function(userPassword, callback) {
     if (error || equal == false) {
       callback(false);
     } else {
-      callback(true);
+      callback(null, true);
     }
   });
 };
