@@ -5,7 +5,7 @@ const route = app.Router();
 
 const User = require('./../db/model/user');
 const requireSignIn = passport.authenticate('local', {session: false});
-const requireAuth = passport.authenticate('jwt', {session: false});
+const requireAuth = passport.authenticate('jwt', {session: false, failWithError: true});
 
 function generateToken(user) {
   var token = jwt.sign({
@@ -13,7 +13,7 @@ function generateToken(user) {
     firstName: user.firstName,
     lastName: user.lastName
   }, 'dota2', {
-    expiresIn: '2h'
+    expiresIn: 10
   });
   return token;
 }
@@ -51,6 +51,12 @@ route.post('/api/auth/sign-in', requireSignIn, (req, res) => {
 
 route.get('/api/secret', requireAuth, (req, res) => {
   res.send('Secret information for authorized users');
+}, (err, req, res) => {
+  console.log('request ', req);
+  console.log('is here?');
+  res.json({
+    status: 401
+  })
 });
 
 module.exports = route;

@@ -8,7 +8,9 @@ import {
   DELETE_POST_SUCCESS,
   DELETE_POST_ERROR,
   FETCH_POST_SUCCESS,
-  FETCH_POST_ERROR
+  FETCH_POST_ERROR,
+  SIGN_IN_SUCCESS,
+  SIGN_IN_ERROR, SIGN_OUT,
 } from "../types/types";
 import axios from 'axios';
 
@@ -106,4 +108,31 @@ export const deletePost = (id) => (dispatch) => {
         error: error.message || "ERROR HAPPENED"
       });
     });
+};
+
+export const signin = (email, password, successCallback, errorCallback) => (dispatch) => {
+  console.log('email ', email, password);
+  axios.post('http://localhost:3001/api/auth/sign-in', {email, password})
+    .then(({data}) => {
+      localStorage.setItem('token', data.token);
+      dispatch({
+        type: SIGN_IN_SUCCESS
+      });
+      successCallback();
+  }).catch((error) => {
+      dispatch({
+        type: SIGN_IN_ERROR
+      });
+
+      errorCallback();
+      // errorCallback('Email ');
+  })
+};
+
+export const signout = (callback) => (dispatch) => {
+  localStorage.removeItem('token');
+  dispatch({
+    type: SIGN_OUT,
+  });
+  callback();
 };
