@@ -1,7 +1,22 @@
+const jwt = require('jsonwebtoken');
 const app = require('express');
+const passport = require('./../service/passport');
 const route = app.Router();
 
 const User = require('./../db/model/user');
+const requireSignIn = passport.authenticate('local', {session: false});
+const requireAuth = passport.authenticate('jwt', {session: false});
+
+function generateToken(user) {
+  var token = jwt.sign({
+    id: user._id,
+    firstName: user.firstName,
+    lastName: user.lastName
+  }, 'dota2', {
+    expiresIn: '2h'
+  });
+  return token;
+}
 
 route.post('/api/auth/sign-up', (req, res) => {
   const firstName = req.body.firstName;
@@ -20,7 +35,7 @@ route.post('/api/auth/sign-up', (req, res) => {
 
   user.save().then((savedUser) => {
     res.status(201).send({
-      savedUser: savedUser,
+      token: generateToken(savedUser)
     })
   }).catch((error) => {
     console.log(error);
@@ -28,29 +43,14 @@ route.post('/api/auth/sign-up', (req, res) => {
   });
 });
 
-route.post('/api/auth/sign-in', (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+route.post('/api/auth/sign-in', requireSignIn, (req, res) => {
+  res.send({
+    token: generateToken(req.user)
+  });
+});
 
-  User.findOne({ email: email})
-    .then((user) => {
-      if (user == null) {
-        res.status(404).send();
-      } else {
-        user.compare(password, function(isEqual) {
-          if (isEqual == false) {
-            res.status(404).send();
-          } else {
-            res.status(200).send({
-              user: user
-            });
-          }
-        });
-      }
-    }).catch((error) => {
-    console.log(error);
-    res.status(500).send(error);
-  })
+route.get('/api/secret', requireAuth, (req, res) => {
+  res.send('Secret information for authorized users');
 });
 
 module.exports = route;
