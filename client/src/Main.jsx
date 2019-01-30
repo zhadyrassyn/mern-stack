@@ -4,6 +4,7 @@ import PostDetail from './containers/PostDetail';
 import Signin from './components/Signin';
 import Signup from './components/Signup';
 import Header from './components/Header';
+import Profile from './containers/Profile';
 
 import { Route, Switch } from "react-router-dom";
 
@@ -16,6 +17,7 @@ class Main extends Component {
           <Route path="/detail/:postId" component={PostDetail}/>
           <Route path="/signin" component={Signin}/>
           <Route path="/signup" component={Signup}/>
+          <Route path="/profile/:id" component={Profile}/>
           <Route path="/" component={App}/>
         </Switch>
       </div>
