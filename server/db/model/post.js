@@ -1,4 +1,5 @@
 const mongoose = require('./../mongoose');
+const Schema = mongoose.Schema;
 
 const Post = mongoose.model('Post', {
   title: {
@@ -8,7 +9,10 @@ const Post = mongoose.model('Post', {
   content: {
     type: String
   },
-  author: String,
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: 'user'
+  },
   createdAt: {
     type: Date,
     default: new Date()

@@ -8,6 +8,8 @@ import { signout } from "../actions/actions";
 
 import { withRouter } from 'react-router-dom';
 
+import jwtDecode from 'jwt-decode';
+
 class Header extends Component {
   constructor(props) {
     super(props);
@@ -22,6 +24,13 @@ class Header extends Component {
   render() {
 
     const authenticated = this.props.authenticated;
+    let userId;
+
+    if (authenticated) {
+      const decodedToken = jwtDecode(localStorage.getItem('token'));
+
+      userId = decodedToken.id;
+    }
 
     return (
       <header>
@@ -46,6 +55,12 @@ class Header extends Component {
               {!authenticated &&
               <li className="nav-item">
                 <NavLink className="nav-link" to="/signup" exact activeClassName="active">Sign up</NavLink>
+              </li>
+              }
+
+              {authenticated &&
+              <li className="nav-item">
+                <NavLink className="nav-link" to={`/profile/${userId}`} exact activeClassName="active">Profile</NavLink>
               </li>
               }
 
