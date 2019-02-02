@@ -86,9 +86,39 @@ router.post('/api/profiles/posts', requireAuth, upload.single('file'), (request,
 });
 
 //Обновление поста пользователя
+router.put('/api/profiles/posts/:postId', requireAuth, upload.single('file'), async (req, res, next) => {
+  const {title, content} = req.body;
+  const postId = req.params.postId;
+
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(postId, {$set: {
+      title,
+      content,
+    }}, {new: true});
+
+    res.status(201).send({
+      updatePost: updatedPost
+    });
+  } catch (e) {
+    next(e);
+  }
+});
 
 //Получить пост пользователя по id
+router.get('/api/profiles/posts/:postId', requireAuth, async (req, res, next) => {
+  const postId = req.params.postId;
 
+  try {
+    const post = await Post.findById(postId);
+
+    res.send({
+      post,
+    });
+  } catch (e) {
+    next(e);
+  }
+
+});
 
 
 module.exports = router;
