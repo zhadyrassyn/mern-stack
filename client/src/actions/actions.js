@@ -12,6 +12,8 @@ import {
   SIGNIN_SUCCESS,
   SIGNIN_ERROR,
   SIGNOUT,
+  GET_PROFILE_POSTS_SUCCESS,
+  GET_PROFILE_POSTS_ERROR
 } from "../types/types";
 import axios from 'axios';
 
@@ -126,7 +128,7 @@ export const signin = (email, password, success) => (dispatch) => {
     dispatch({
       type: SIGNIN_ERROR
     });
-  });
+  })
 };
 
 export const signout = (callback) => (dispatch) => {
@@ -134,4 +136,32 @@ export const signout = (callback) => (dispatch) => {
   dispatch({
     type: SIGNOUT,
   });
+};
+
+const getHeaders = () => {
+  return {
+    'Authorization': `Bearer ${localStorage.getItem('token')}`
+  };
+};
+
+/* PROFILE ACTIONS */
+export const getProfilePosts = () => (dispatch) => {
+
+  console.log(getHeaders());
+
+  axios.get('http://localhost:3001/api/profiles/posts',
+    {
+      headers: getHeaders()
+    }
+  ).then((response) => {
+    dispatch({
+      type: GET_PROFILE_POSTS_SUCCESS,
+      data: response.data.posts,
+    });
+  }).catch((error) => {
+    dispatch({
+      type: GET_PROFILE_POSTS_ERROR,
+      error: error.response.error
+    });
+  })
 };

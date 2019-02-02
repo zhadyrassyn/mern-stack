@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+var morgan = require('morgan');
 
 var mongoose = require('./db/mongoose');
 var postRoute = require('./route/postRoute');
@@ -9,6 +10,7 @@ const profileRoute = require('./route/profileRoute');
 
 var app = express();
 
+app.use(morgan('dev'));
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/', postRoute);
