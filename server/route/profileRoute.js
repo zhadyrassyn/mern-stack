@@ -12,6 +12,8 @@ const upload = multer({ dest: uploadDir });
 const passport = require('./../service/passport');
 const requireAuth = passport.authenticate('jwt', {session: false});
 
+const User = require('./../db/model/user');
+
 router.get('/api/profiles/posts', requireAuth, async (req, res, next) => {
   try {
     const posts = await Post.find({ author: req.user._id });
@@ -120,5 +122,35 @@ router.get('/api/profiles/posts/:postId', requireAuth, async (req, res, next) =>
 
 });
 
+//Сохранить аватар
+router.post('/api/profiles/ava', requireAuth, upload.single('file'), (req, res, next) => {
+  const userId = req.user._id;
+  const filePath = req.file.path;
+  const targetFile = userId + '.' + req.file.originalname.split('.').pop();
+  const targetPath = path.join(uploadDir, "avas", targetFile);
+
+  fs.rename(filePath, targetPath, function(err) {
+    if (err) next(err);
+
+    User.findById(userId).then((user) => {
+      const previousAvatarPath = user.imagePath;
+
+      user.imagePath = '/avas/' + targetFile;
+      user.save().then((updatedUser) => {
+
+        fs.unlink(path.join(uploadDir, previousAvatarPath), function(err) {
+          if (err) {
+            console.log(err);
+          }
+        });
+
+        res.send({
+          updatedUser
+        });
+      }).catch((error) => next(error));
+    }).catch((error) => next(error))
+  });
+
+});
 
 module.exports = router;

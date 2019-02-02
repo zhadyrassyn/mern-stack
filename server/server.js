@@ -7,8 +7,10 @@ var mongoose = require('./db/mongoose');
 var postRoute = require('./route/postRoute');
 const authRoute = require('./route/authRoute');
 const profileRoute = require('./route/profileRoute');
+const path = require('path');
 
 var app = express();
+app.use(express.static(path.join(__dirname, "uploads")));
 
 app.use(morgan('dev'));
 app.use(cors());
