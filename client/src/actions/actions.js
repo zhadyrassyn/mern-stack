@@ -5,6 +5,8 @@ import {
   FETCH_POST_ERROR,
   SIGNIN_SUCCESS,
   SIGNIN_ERROR,
+  SIGNUP_SUCCESS,
+  SIGNUP_ERROR,
   SIGNOUT,
   GET_PROFILE_POSTS_SUCCESS,
   GET_PROFILE_POSTS_ERROR,
@@ -67,6 +69,32 @@ export const signin = (email, password, success) => (dispatch) => {
       type: SIGNIN_ERROR
     });
   })
+};
+
+export const signup = (firstName, lastName,
+                       email, password,
+                       success, fail) => (dispatch) => {
+
+  axios.post('http://localhost:3001/api/auth/sign-up', {
+    firstName,
+    lastName,
+    email,
+    password,
+  }).then((response) => {
+    localStorage.setItem('token', response.data.token);
+    dispatch({
+      type: SIGNUP_SUCCESS
+    });
+    success();
+  }).catch((error) => {
+    console.log(error);
+    dispatch({
+      type: SIGNUP_ERROR
+    });
+
+    console.log('123 ',error.response);
+    fail(error.response && error.response.data.error)
+  });
 };
 
 export const signout = (callback) => (dispatch) => {

@@ -1,6 +1,8 @@
 import {
   SIGNIN_SUCCESS,
   SIGNIN_ERROR,
+  SIGNUP_SUCCESS,
+  SIGNUP_ERROR,
   SIGNOUT
 } from "../types/types";
 
@@ -16,6 +18,16 @@ export default (state = initialState, action) => {
         authenticated: true,
       };
     case SIGNIN_ERROR:
+      return {
+        ...state,
+        authenticated: false
+      };
+    case SIGNUP_SUCCESS:
+      return {
+        ...state,
+        authenticated: true,
+      };
+    case SIGNUP_ERROR:
       return {
         ...state,
         authenticated: false

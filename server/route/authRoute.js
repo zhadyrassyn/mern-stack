@@ -1,3 +1,4 @@
+const emailValidator = require('email-validator');
 const jwt = require('jsonwebtoken');
 const app = require('express');
 const passport = require('./../service/passport');
@@ -18,11 +19,34 @@ function generateToken(user) {
   return token;
 }
 
-route.post('/api/auth/sign-up', (req, res) => {
+route.post('/api/auth/sign-up', async (req, res) => {
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const email = req.body.email;
   const password = req.body.password;
+
+  if (!email || !emailValidator.validate(email)) {
+    res.status(400).send({
+      error: {
+        message: 'Email type is wrong'
+      }
+    });
+  }
+
+  try {
+    const amount = await User.countDocuments({ email: email});
+    if (amount >= 1) {
+      res.status(400).send({
+        error: {
+          message: 'Email already exists'
+        }
+      });
+    }
+  } catch (e) {
+    e.message = 'Internal server error';
+    next(e);
+  }
+
 
   // const {firstName, lastName, email, password } = req.body;
   const user = new User({
