@@ -6,12 +6,15 @@ import {
   DELETE_PROFILE_POST_SUCCESS,
   DELETE_PROFILE_POST_ERROR,
   UPDATE_PROFILE_POST_SUCCESS,
-  UPDATE_PROFILE_POST_ERROR
+  UPDATE_PROFILE_POST_ERROR,
+  GET_PROFILE_SUCCESS,
+  GET_PROFILE_ERROR
 } from "../types/types";
 
 const initialState = {
   posts: [],
   error: null,
+  profile: {}
 };
 
 export default (state=initialState, action) => {
@@ -57,6 +60,16 @@ export default (state=initialState, action) => {
         posts: state.posts.filter(post => post._id !== action.data),
       };
     case DELETE_PROFILE_POST_ERROR:
+      return {
+        ...state,
+        error: action.error
+      };
+    case GET_PROFILE_SUCCESS:
+      return {
+        ...state,
+        profile: action.data
+      };
+    case GET_PROFILE_ERROR:
       return {
         ...state,
         error: action.error

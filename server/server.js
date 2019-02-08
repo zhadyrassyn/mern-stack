@@ -7,8 +7,10 @@ var mongoose = require('./db/mongoose');
 var postRoute = require('./route/postRoute');
 const authRoute = require('./route/authRoute');
 const profileRoute = require('./route/profileRoute');
+const path = require('path');
 
 var app = express();
+app.use(express.static(path.join(__dirname, "uploads")));
 
 app.use(morgan('dev'));
 app.use(cors());
@@ -18,6 +20,7 @@ app.use('/', authRoute);
 app.use('/', profileRoute);
 
 function handleError(err, req, res, next) {
+  console.log(err);
   const statusCode = err.status || 500;
   const errorResponse = {
     name: err.name,

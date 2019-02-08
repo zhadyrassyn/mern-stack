@@ -20,7 +20,8 @@ const userSchema = new Schema({
   createdAt: {
     type: Date,
     default: new Date(),
-  }
+  },
+  avaPath: String
 });
 
 userSchema.pre('save', function(next) {

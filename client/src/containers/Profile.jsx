@@ -2,7 +2,13 @@ import React from 'react';
 
 import { connect } from 'react-redux';
 
-import { getProfilePosts, saveProfilePost, deleteProfilePost, updateProfilePost } from "../actions/actions";
+import {
+  getProfilePosts,
+  saveProfilePost,
+  deleteProfilePost,
+  updateProfilePost,
+  getProfile
+} from "../actions/actions";
 
 import Row from './../components/Row';
 
@@ -25,6 +31,7 @@ class Profile extends React.Component {
   }
 
   componentDidMount() {
+    this.props.getProfile();
     this.props.getProfilePosts();
   }
 
@@ -158,6 +165,9 @@ class Profile extends React.Component {
     const editTitle = this.state.editTitle;
     const editContent = this.state.editContent;
 
+    const profile = this.props.profile;
+    console.log('profile ', profile);
+
     return (
       <div className="pt-2 px-2">
         {showAddModal &&
@@ -242,7 +252,8 @@ class Profile extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    posts: state.profile.posts
+    posts: state.profile.posts,
+    profile: state.profile.profile,
   };
 };
 
@@ -250,6 +261,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getProfilePosts: () =>
       dispatch(getProfilePosts()),
+
     saveProfilePost: (newPost, changeState) => {
       dispatch(saveProfilePost(newPost, changeState));
     },
@@ -260,7 +272,9 @@ const mapDispatchToProps = (dispatch) => {
 
     deleteProfilePost: (id) => {
       dispatch(deleteProfilePost(id));
-    }
+    },
+
+    getProfile: () => dispatch(getProfile())
   }
 };
 

@@ -15,7 +15,9 @@ import {
   DELETE_PROFILE_POST_SUCCESS,
   DELETE_PROFILE_POST_ERROR,
   UPDATE_PROFILE_POST_SUCCESS,
-  UPDATE_PROFILE_POST_ERROR
+  UPDATE_PROFILE_POST_ERROR,
+  GET_PROFILE_SUCCESS,
+  GET_PROFILE_ERROR,
 } from "../types/types";
 import axios from 'axios';
 
@@ -196,4 +198,21 @@ export const updateProfilePost = (id, newPost, changeState) => (dispatch) => {
         error: error.response && error.response.error || 'INTERNAL_SERVER'
       });
     });
+};
+
+export const getProfile = () => (dispatch) => {
+  axios.get('http://localhost:3001/api/profile', {
+    headers: getHeaders(),
+  }).then((success) => {
+    dispatch({
+      type: GET_PROFILE_SUCCESS,
+      data: success.data
+    })
+  }).catch((error) => {
+    console.log(error);
+    dispatch({
+      type: GET_PROFILE_ERROR,
+      error: error.response && error.response.error || 'INTERNAL_SERVER'
+    });
+  });
 };
