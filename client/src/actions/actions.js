@@ -18,6 +18,8 @@ import {
   UPDATE_PROFILE_POST_ERROR,
   GET_PROFILE_SUCCESS,
   GET_PROFILE_ERROR,
+  CHANGE_PROFILE_AVA_SUCCESS,
+  CHANGE_PROFILE_AVA_ERROR
 } from "../types/types";
 import axios from 'axios';
 
@@ -104,6 +106,7 @@ export const signout = (callback) => (dispatch) => {
   dispatch({
     type: SIGNOUT,
   });
+  callback();
 };
 
 const getHeaders = () => {
@@ -208,6 +211,24 @@ export const getProfile = () => (dispatch) => {
       type: GET_PROFILE_SUCCESS,
       data: success.data
     })
+  }).catch((error) => {
+    console.log(error);
+    dispatch({
+      type: GET_PROFILE_ERROR,
+      error: error.response && error.response.error || 'INTERNAL_SERVER'
+    });
+  });
+};
+
+export const changeProfileAva = (formData) => (dispatch) => {
+  axios.post('http://localhost:3001/api/profiles/ava', formData, {
+    headers: getHeaders()
+  }).then((success) => {
+    const profile = success.data.updatedUser;
+    dispatch({
+      type: CHANGE_PROFILE_AVA_SUCCESS,
+      data: profile
+    });
   }).catch((error) => {
     console.log(error);
     dispatch({

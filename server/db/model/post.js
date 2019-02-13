@@ -18,6 +18,12 @@ const Post = mongoose.model('Post', {
     default: new Date()
   },
   image: String,
+  comments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'comment'
+    }
+  ]
 });
 
 module.exports = Post;

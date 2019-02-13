@@ -8,7 +8,9 @@ import {
   UPDATE_PROFILE_POST_SUCCESS,
   UPDATE_PROFILE_POST_ERROR,
   GET_PROFILE_SUCCESS,
-  GET_PROFILE_ERROR
+  GET_PROFILE_ERROR,
+  CHANGE_PROFILE_AVA_SUCCESS,
+  CHANGE_PROFILE_AVA_ERROR,
 } from "../types/types";
 
 const initialState = {
@@ -70,6 +72,16 @@ export default (state=initialState, action) => {
         profile: action.data
       };
     case GET_PROFILE_ERROR:
+      return {
+        ...state,
+        error: action.error
+      };
+    case CHANGE_PROFILE_AVA_SUCCESS:
+      return {
+        ...state,
+        profile: action.data
+      };
+    case CHANGE_PROFILE_AVA_ERROR:
       return {
         ...state,
         error: action.error

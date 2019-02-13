@@ -7,6 +7,7 @@ var mongoose = require('./db/mongoose');
 var postRoute = require('./route/postRoute');
 const authRoute = require('./route/authRoute');
 const profileRoute = require('./route/profileRoute');
+const commentRoute = require('./route/commentRoute');
 const path = require('path');
 
 var app = express();
@@ -18,6 +19,7 @@ app.use(bodyParser.json());
 app.use('/', postRoute);
 app.use('/', authRoute);
 app.use('/', profileRoute);
+app.use('/', commentRoute);
 
 function handleError(err, req, res, next) {
   console.log(err);

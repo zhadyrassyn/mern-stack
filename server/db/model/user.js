@@ -44,10 +44,14 @@ userSchema.pre('save', function(next) {
 
 userSchema.methods.compare = function(userPassword, callback) {
   var user = this;
+  console.log(userPassword);
+  console.log(user.password);
+
   bcrypt.compare(userPassword, user.password, function(error, equal) {
+
     if (error) {
       callback(error);
-    } else if (equal == false) {
+    } else if (!equal) {
       callback(null, false);
     } else {
       callback(null, true);

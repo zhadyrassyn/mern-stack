@@ -127,7 +127,8 @@ router.post('/api/profiles/ava', requireAuth, upload.single('file'),
       const id = req.user._id;
       const filePath = req.file.path;
 
-      const targetFile = id + '.' + req.file.originalname.split('.').pop();
+      const fileExtension = req.file.originalname.split('.').pop();
+      const targetFile = id + '.' + fileExtension;
       const targetPath = path.join(uploadDir, "avas", targetFile);
 
       fs.rename(filePath, targetPath, function(err) {
@@ -140,11 +141,13 @@ router.post('/api/profiles/ava', requireAuth, upload.single('file'),
 
           user.save().then((updatedUser) => {
 
-            fs.unlink(previousAvaPath, function(err) {
-              if (err) {
-                console.log(err);
-              }
-            });
+            if (previousAvaPath && !previousAvaPath.endsWith(fileExtension)) {
+              fs.unlink(previousAvaPath, function(err) {
+                if (err) {
+                  console.log(err);
+                }
+              });
+            }
 
             res.send({
               updatedUser
@@ -155,8 +158,56 @@ router.post('/api/profiles/ava', requireAuth, upload.single('file'),
           });
         }).catch((error) => next(error));
       });
+});
+
+router.post('/api/profiles/ava/v1', requireAuth, upload.single('file'), function(req, res, next) {
+  const id = req.user._id;
+  const filePath = req.file.path;
+
+  const fileExtension = req.file.originalname.split('.').pop();
+  const targetFile = id + '.' + req.file.originalname.split('.').pop();
+  const targetPath = path.join(uploadDir, "avas", targetFile);
+
+  fs.rename(filePath, targetPath, function(err) {
+    if (err) next(err);
+
+
+    User.findById(id).then((user) => {
+      const previousAvaPath = user.avaPath;
+
+      user.avaPath = "/avas/" + targetFile;
+
+      ///
+      user.save().then((updatedUser) => {
+
+        if (previousAvaPath && !previousAvaPath.endsWith(fileExtension)) {
+          fs.unlink(previousAvaPath, function(err) {
+            if (err) {
+              console.log(err);
+            }
+          });
+
+        }
+
+        res.send({
+          id,
+          filePath
+        })
+
+
+      }).catch((error) => {
+        next(error);
+      });
+
+      ///
+
+      }).catch((error) => {
+        next(error);
+      });
+    });
 
 });
+
 
 router.get('/api/profile', requireAuth, (req, res, next) => {
   const userId = req.user._id;

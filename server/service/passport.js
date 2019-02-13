@@ -16,9 +16,11 @@ const localStrategy = new LocalStrategy(localStrategyOptions,
         done(null, false);
       } else {
         user.compare(password, function(error, match) {
+          console.log(error);
+          console.log(match);
           if (error) {
             done(error);
-          } else if (match == false) {
+          } else if (!match) {
             done(null, false);
           } else {
             done(null, user);

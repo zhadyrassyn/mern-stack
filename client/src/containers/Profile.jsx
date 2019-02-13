@@ -7,8 +7,11 @@ import {
   saveProfilePost,
   deleteProfilePost,
   updateProfilePost,
-  getProfile
+  getProfile,
+  changeProfileAva,
 } from "../actions/actions";
+
+import defaultAva from './../images/defaultAva.png';
 
 import Row from './../components/Row';
 
@@ -153,6 +156,18 @@ class Profile extends React.Component {
     });
   }
 
+  handleAvaChangeEvent(event) {
+   const image = event.target.files[0];
+
+   if (image) {
+     const formData = new FormData();
+     formData.append('file', image);
+
+     // call action
+     this.props.changeAva(formData);
+   }
+  }
+
   render() {
     const posts = this.props.posts;
     const showAddModal = this.state.showAddModal;
@@ -166,10 +181,25 @@ class Profile extends React.Component {
     const editContent = this.state.editContent;
 
     const profile = this.props.profile;
-    console.log('profile ', profile);
 
     return (
       <div className="pt-2 px-2">
+
+        { profile.avaPath &&
+          <label htmlFor="avaFileInput">
+            <img src={"http://localhost:3001" + profile.avaPath + "?cb=" + (new Date()).toString()} alt="ava"/>
+          </label>
+
+        }
+
+        { !profile.avaPath &&
+          <label htmlFor="avaFileInput">
+            <img src={defaultAva} alt="ava"/>
+          </label>
+        }
+
+        <input type="file" id="avaFileInput" className="d-none" onChange={this.handleAvaChangeEvent.bind(this)}/>
+
         {showAddModal &&
         <div className="modal">
           <div className="modal-content">
@@ -189,6 +219,11 @@ class Profile extends React.Component {
               <div className="input-group my-3">
                 <textarea type="text" className="form-control" name="addContent" placeholder="Content..."
                           onChange={this.handleModalInputsChange.bind(this)} value={addContent}/>
+              </div>
+              <div className="input-group mb-3">
+                <input type="file" className="form-control-file"
+                       onChange={this.handleFileChange.bind(this)}
+                />
               </div>
             </div>
             <div className="modal-footer">
@@ -230,11 +265,6 @@ class Profile extends React.Component {
                 <textarea type="text" className="form-control" name="editContent" placeholder="Content..."
                           onChange={this.handleModalInputsChange.bind(this)} value={editContent}/>
               </div>
-              <div className="input-group mb-3">
-                <input type="file" className="form-control-file"
-                       onChange={this.handleFileChange.bind(this)}
-                />
-              </div>
             </div>
             <div className="modal-footer">
               <div className="my-2">
@@ -274,7 +304,11 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(deleteProfilePost(id));
     },
 
-    getProfile: () => dispatch(getProfile())
+    getProfile: () => dispatch(getProfile()),
+
+    changeAva: (formData) => {
+      dispatch(changeProfileAva(formData));
+    }
   }
 };
 
