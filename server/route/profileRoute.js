@@ -16,7 +16,15 @@ const User = require('./../db/model/user');
 
 router.get('/api/profiles/posts', requireAuth, async (req, res, next) => {
   try {
-    const posts = await Post.find({ author: req.user._id });
+    const posts = await Post.find({ author: req.user._id })
+      // .populate({
+      //   path: 'comments',
+      //   select: 'createDate user text',
+      //   populate: {
+      //     path: 'user',
+      //     select: 'firstName lastName'
+      //   }
+      // });
 
     res.send({
       posts

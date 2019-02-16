@@ -26,7 +26,16 @@ app.get('/api/posts', function(request, response, next) {
 app.get('/api/posts/:postId', function(request, response) {
   var postId = request.params.postId;
 
-  Post.findById(postId).then(function(post){
+  Post.findById(postId)
+    .populate({
+      path: 'comments',
+      select: 'createDate user text',
+      populate: {
+        path: 'user',
+        select: 'firstName lastName avaPath'
+      }
+    })
+    .then(function(post){
     if (post == null) {
       response.status(400).send();
     } else {

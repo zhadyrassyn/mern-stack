@@ -19,7 +19,11 @@ import {
   GET_PROFILE_SUCCESS,
   GET_PROFILE_ERROR,
   CHANGE_PROFILE_AVA_SUCCESS,
-  CHANGE_PROFILE_AVA_ERROR
+  CHANGE_PROFILE_AVA_ERROR,
+  SAVE_COMMENT_SUCCESS,
+  SAVE_COMMENT_ERROR,
+  DELETE_COMMENT_SUCCESS,
+  DELETE_COMMENT_ERROR
 } from "../types/types";
 import axios from 'axios';
 
@@ -232,7 +236,47 @@ export const changeProfileAva = (formData) => (dispatch) => {
   }).catch((error) => {
     console.log(error);
     dispatch({
-      type: GET_PROFILE_ERROR,
+      type: CHANGE_PROFILE_AVA_ERROR,
+      error: error.response && error.response.error || 'INTERNAL_SERVER'
+    });
+  });
+};
+
+export const saveComment = (postId, commentText, successCallback) => (dispatch) => {
+  const data = {
+    comment: commentText,
+  };
+
+  axios.post(`http://localhost:3001/api/posts/${postId}/comments`, data, {
+    headers: getHeaders()
+  }).then((success) => {
+    dispatch({
+      type: SAVE_COMMENT_SUCCESS,
+      data: success.data.savedComment
+    });
+
+    successCallback();
+  }).catch((error) => {
+    console.log(error);
+    dispatch({
+      type: SAVE_COMMENT_ERROR,
+      error: error.response && error.response.error || 'INTERNAL_SERVER'
+    });
+  });
+};
+
+export const deleteComment = (postId, commentId) => dispatch => {
+  axios.delete(`http://localhost:3001/api/posts/${postId}/comments/${commentId}`, {
+    headers: getHeaders()
+  }).then((success) => {
+    dispatch({
+      type: DELETE_COMMENT_SUCCESS,
+      data: success.data.deletedComment
+    })
+  }).catch((error) => {
+    console.log(error);
+    dispatch({
+      type: DELETE_COMMENT_ERROR,
       error: error.response && error.response.error || 'INTERNAL_SERVER'
     });
   });

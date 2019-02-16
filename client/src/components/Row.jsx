@@ -42,6 +42,7 @@ class Row extends Component {
           <div>
             <button onClick={this.deletePost.bind(this)} className="btn btn-danger ml-2"><i className="fas fa-trash-alt"/></button>
             <button onClick={this.editPost.bind(this)} className="btn btn-info ml-2"><i className="fas fa-edit"/></button>
+            <Link to={link} className="btn btn-light ml-2"><i className="fas fa-chevron-right"/></Link>
           </div>
         }
 
