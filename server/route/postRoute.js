@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const base64Img = require('base64-img');
 const fs = require('fs');
+const Like = require('./../db/model/like');
 
 const uploadDir = path.join(__dirname, "../uploads");
 const upload = multer({ dest: uploadDir });
@@ -23,30 +24,33 @@ app.get('/api/posts', function(request, response, next) {
 
 // Вытащить элеметы по ID
 // localhost:3000/api/posts/dgd3523534
-app.get('/api/posts/:postId', function(request, response) {
+app.get('/api/posts/:postId', async function(request, response) {
   var postId = request.params.postId;
 
-  Post.findById(postId)
-    .populate({
-      path: 'comments',
-      select: 'createDate user text',
-      populate: {
-        path: 'user',
-        select: 'firstName lastName avaPath'
-      }
+  try {
+    let post = await Post.findById(postId)
+      .populate({
+        path: 'comments',
+        select: 'createDate user text',
+        populate: {
+          path: 'user',
+          select: 'firstName lastName avaPath'
+        }
+      });
+
+    post = post.toObject();
+
+    const likesAmount = await Like.count({
+      post: postId
+    });
+
+    post.likes = likesAmount;
+    response.send({
+      post: post
     })
-    .then(function(post){
-    if (post == null) {
-      response.status(400).send();
-    } else {
-      response.send({
-        post: post
-      })
-    }
-  }).catch(function(error) {
-    console.log(error);
-    response.status(400).send();
-  })
+  } catch(e) {
+    next(e);
+  }
 });
 
 

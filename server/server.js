@@ -8,6 +8,7 @@ var postRoute = require('./route/postRoute');
 const authRoute = require('./route/authRoute');
 const profileRoute = require('./route/profileRoute');
 const commentRoute = require('./route/commentRoute');
+const likeRoute = require('./route/likeRoute');
 const path = require('path');
 
 var app = express();
@@ -20,6 +21,7 @@ app.use('/', postRoute);
 app.use('/', authRoute);
 app.use('/', profileRoute);
 app.use('/', commentRoute);
+app.use('/', likeRoute);
 
 function handleError(err, req, res, next) {
   console.log(err);
