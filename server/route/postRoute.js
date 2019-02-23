@@ -9,17 +9,47 @@ const Like = require('./../db/model/like');
 const uploadDir = path.join(__dirname, "../uploads");
 const upload = multer({ dest: uploadDir });
 
+
+const generatePosts = async function() {
+  for(var i = 1; i <= 20; i++) {
+    const newPost = {
+      title: 'title' + i,
+      content: 'content' + i,
+      author: '5c6d436867e1431b25576748'
+    };
+
+    const post = new Post(newPost);
+
+    await post.save();
+  }
+};
+
+// generatePosts();
+
+
 // Вытащить все посты
-// localhost:3000/api/posts
-app.get('/api/posts', function(request, response, next) {
-  Post.find().then((posts) => {
-    response.status(200).send({
-      posts: posts
+// localhost:3001/api/posts?perPage=2&currentPage=2
+app.get('/api/posts', async function(request, response, next) {
+  const perPage = request.query.perPage;
+  const currentPage = request.query.currentPage;
+
+  const skipAmount = (parseInt(currentPage) - 1) * parseInt(perPage);
+
+  try {
+    const posts = await Post.find()
+      .skip(skipAmount)
+      .limit(parseInt(perPage));
+
+    const total = await Post.count();
+
+    response.send({
+      posts: posts,
+      total: total
     });
-  }).catch((error) => {
-    console.log('error ', error);
-    response.status(400).send();
-  });
+  } catch(error) {
+    console.log(error);
+    next(error);
+  }
 });
 
 // Вытащить элеметы по ID

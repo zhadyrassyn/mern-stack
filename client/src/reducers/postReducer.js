@@ -11,7 +11,8 @@ import {
 
 const initialState = {
   posts: [],
-  fetchedPost: null
+  fetchedPost: null,
+  total: 0
 };
 
 export default (state = initialState, action) => {
@@ -19,7 +20,8 @@ export default (state = initialState, action) => {
     case FETCH_POSTS_SUCCESS:
       return {
         ...state,
-        posts: action.data
+        posts: action.data,
+        total: action.total,
       };
     case FETCH_POSTS_ERROR:
       return {

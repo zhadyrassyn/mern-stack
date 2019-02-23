@@ -43,13 +43,14 @@ export const fetchPost = (id) => (dispatch) => {
     })
 };
 
-export const fetchPosts = () => (dispatch, getState) => {
+export const fetchPosts = (perPage, currentPage) => (dispatch, getState) => {
 
-  axios('http://localhost:3001/api/posts')
+  axios(`http://localhost:3001/api/posts?perPage=${perPage}&currentPage=${currentPage}`)
     .then((success) => {
       dispatch({
         type: FETCH_POSTS_SUCCESS,
-        data: success.data.posts
+        data: success.data.posts,
+        total: success.data.total,
       })
     })
     .catch(function(error) {
