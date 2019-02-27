@@ -36,7 +36,7 @@ class Row extends Component {
 
           <img src={image} alt="Картинка поста" className="post-image"/>
         </div>
-        {title}, {content}, {author}
+        {title}, {content}, {author.firstName || ""}, {author.lastName || ""}
 
         {authenticated &&
           <div>

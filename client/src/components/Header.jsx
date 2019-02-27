@@ -4,7 +4,7 @@ import { Link, NavLink } from 'react-router-dom';
 
 import { connect } from 'react-redux';
 
-import { signout } from "../actions/actions";
+import { signout, fetchPosts, changeSearchParams } from "../actions/actions";
 
 import { withRouter } from 'react-router-dom';
 
@@ -13,11 +13,33 @@ import jwtDecode from 'jwt-decode';
 class Header extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      search: '',
+    }
   }
 
   handleSignout() {
     this.props.signout(() => {
       this.props.history.push('/');
+    });
+  }
+
+  handleInputChange(event) {
+    this.setState({
+      search: event.target.value,
+    });
+  }
+
+  handleSearch(event) {
+    event.preventDefault();
+
+    const searchText = this.state.search;
+
+
+
+    this.props.fetchPosts(this.props.perPage, 1, searchText, () => {
+      this.props.changeSearchParams(1, searchText);
     });
   }
 
@@ -32,6 +54,8 @@ class Header extends Component {
       userId = decodedToken.id;
     }
 
+    const search = this.state.search;
+
     return (
       <header>
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -40,7 +64,7 @@ class Header extends Component {
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
+          <div className="collapse navbar-collapse navbar-container" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
                 <NavLink className="nav-link" to="/" exact activeClassName="active">Home <span className="sr-only">(current)</span></NavLink>
@@ -71,6 +95,14 @@ class Header extends Component {
               }
 
             </ul>
+
+
+            <form className="form-inline my-2 my-lg-0">
+              <input value={search} className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"
+                onChange={this.handleInputChange.bind(this)}/>
+              <button className="btn btn-outline-success my-2 my-sm-0" type="submit" onClick={this.handleSearch.bind(this)}>Search</button>
+            </form>
+
           </div>
         </nav>
       </header>
@@ -81,13 +113,19 @@ class Header extends Component {
 const mapStateToProps = (state) => {
   return {
     authenticated: state.user.authenticated,
+    perPage: state.posts.perPage,
   }
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    fetchPosts: (perPage, currentPage, searchText, successCallback) =>
+      dispatch(fetchPosts(perPage, currentPage, searchText, successCallback)),
     signout: (callback) => {
       dispatch(signout(callback));
+    },
+    changeSearchParams: (page, searchText) => {
+      dispatch(changeSearchParams(page, searchText));
     }
   }
 };

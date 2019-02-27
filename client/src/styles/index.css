@@ -126,3 +126,7 @@
   border-radius: 50%;
   margin-right: 20px;
 }
+
+.navbar-container {
+  justify-content: space-between;
+}

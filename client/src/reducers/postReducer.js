@@ -7,12 +7,16 @@ import {
   SAVE_COMMENT_ERROR,
   DELETE_COMMENT_SUCCESS,
   DELETE_COMMENT_ERROR,
+  CHANGE_SEARCH_PARAMS_SUCCESS
 } from "../types/types";
 
 const initialState = {
   posts: [],
   fetchedPost: null,
-  total: 0
+  total: 0,
+  perPage: 3,
+  currentPage: 1,
+  searchText: ''
 };
 
 export default (state = initialState, action) => {
@@ -65,6 +69,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         error: action.message,
+      };
+    case CHANGE_SEARCH_PARAMS_SUCCESS:
+      return {
+        ...state,
+        currentPage: action.page,
+        searchText: action.searchText
       };
     default:
       return state;

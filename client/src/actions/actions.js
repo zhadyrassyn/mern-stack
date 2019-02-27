@@ -23,7 +23,8 @@ import {
   SAVE_COMMENT_SUCCESS,
   SAVE_COMMENT_ERROR,
   DELETE_COMMENT_SUCCESS,
-  DELETE_COMMENT_ERROR
+  DELETE_COMMENT_ERROR,
+  CHANGE_SEARCH_PARAMS_SUCCESS
 } from "../types/types";
 import axios from 'axios';
 
@@ -43,15 +44,20 @@ export const fetchPost = (id) => (dispatch) => {
     })
 };
 
-export const fetchPosts = (perPage, currentPage) => (dispatch, getState) => {
+export const fetchPosts = (perPage, currentPage, searchText, successCallback) => (dispatch, getState) => {
 
-  axios(`http://localhost:3001/api/posts?perPage=${perPage}&currentPage=${currentPage}`)
+  axios(`http://localhost:3001/api/posts?perPage=${perPage}&currentPage=${currentPage}&searchText=${searchText || ""}`)
     .then((success) => {
       dispatch({
         type: FETCH_POSTS_SUCCESS,
         data: success.data.posts,
         total: success.data.total,
-      })
+      });
+
+      if(successCallback) {
+        successCallback();
+      }
+
     })
     .catch(function(error) {
       console.log(error);
@@ -281,4 +287,12 @@ export const deleteComment = (postId, commentId) => dispatch => {
       error: error.response && error.response.error || 'INTERNAL_SERVER'
     });
   });
+};
+
+export const changeSearchParams = (page, searchText) => {
+  return {
+    type: CHANGE_SEARCH_PARAMS_SUCCESS,
+    page: page,
+    searchText: searchText
+  }
 };

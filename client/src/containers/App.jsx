@@ -1,7 +1,7 @@
 import React from 'react';
 import Row from './../components/Row';
 import { connect } from 'react-redux';
-import { fetchPosts} from "../actions/actions";
+import { fetchPosts, changeSearchParams } from "../actions/actions";
 
 import './../styles/index.css';
 
@@ -9,15 +9,11 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      perPage: 3,
-      currentPage: 1
-    }
   }
 
   componentDidMount() {
-    const perPage = this.state.perPage;
-    const currentPage = this.state.currentPage;
+    const perPage = this.props.perPage;
+    const currentPage = this.props.currentPage;
     this.props.fetchPosts(perPage, currentPage);
   }
 
@@ -38,20 +34,19 @@ class App extends React.Component {
   changePage = (title) => {
     const page = parseInt(title);
 
-    const perPage = this.state.perPage;
+    const perPage = this.props.perPage;
+    const searchText = this.props.searchText;
 
-    this.props.fetchPosts(perPage, page);
-
-    this.setState({
-      currentPage: page
+    this.props.fetchPosts(perPage, page, searchText, () => {
+      this.props.changeSearchParams(page, searchText);
     });
   };
 
   render() {
     const posts = this.props.posts;
 
-    const perPage = this.state.perPage;
-    const currentPage = this.state.currentPage;
+    const perPage = this.props.perPage;
+    const currentPage = this.props.currentPage;
     const total = this.props.total;
 
     const totalNumbers = Math.ceil(total / perPage);
@@ -105,13 +100,19 @@ const mapStateToProps = (state) => {
   return {
     posts: state.posts.posts,
     total: state.posts.total,
+    perPage: state.posts.perPage,
+    currentPage: state.posts.currentPage,
+    searchText: state.posts.searchText,
   }
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchPosts: (perPage, currentPage) =>
-      dispatch(fetchPosts(perPage, currentPage)),
+    fetchPosts: (perPage, currentPage, searchText, successCallback) =>
+      dispatch(fetchPosts(perPage, currentPage, searchText, successCallback)),
+    changeSearchParams: (page, searchText) => {
+      dispatch(changeSearchParams(page, searchText));
+    }
   }
 };
 

@@ -11,11 +11,11 @@ const upload = multer({ dest: uploadDir });
 
 
 const generatePosts = async function() {
-  for(var i = 1; i <= 20; i++) {
+  for(var i = 1; i <= 1; i++) {
     const newPost = {
-      title: 'title' + i,
-      content: 'content' + i,
-      author: '5c6d436867e1431b25576748'
+      title: 'title' + 55,
+      content: 'content' + 87,
+      author: '5c71555204544e3a111248b0'
     };
 
     const post = new Post(newPost);
@@ -28,24 +28,112 @@ const generatePosts = async function() {
 
 
 // Вытащить все посты
-// localhost:3001/api/posts?perPage=2&currentPage=2
+// localhost:3001/api/posts?perPage=2&currentPage=2&searchText=abc
+//title, content, firstName, lastName
 app.get('/api/posts', async function(request, response, next) {
   const perPage = request.query.perPage;
   const currentPage = request.query.currentPage;
+  const searchText = request.query.searchText || "";
+
+  console.log('searchText ', searchText);
 
   const skipAmount = (parseInt(currentPage) - 1) * parseInt(perPage);
-
   try {
-    const posts = await Post.find()
-      .skip(skipAmount)
-      .limit(parseInt(perPage));
+    var regex = new RegExp(searchText, 'gi');
 
-    const total = await Post.count();
+    // const posts = await Post.find({
+    //   $or: [
+    //     {title: regex},
+    //     {content: regex}
+    //   ]
+    // })
+    //   .skip(skipAmount)
+    //   .limit(parseInt(perPage))
+    //   .populate({
+    //     path: 'author',
+    //     select: 'firstName lastName'
+    //   });
+    //
+    // const total = await Post.count({
+    //   $or: [
+    //     {title: regex},
+    //     {content: regex}
+    //   ]
+    // });
 
+    //search by title, content, firstName, lastName
+
+    const aggregateFilters = [
+      {
+        $lookup: {
+          'from': 'users',
+          'localField': 'author',
+          'foreignField': '_id',
+          'as': 'author'
+        }
+      },
+
+      {
+        $project: {
+          title: 1,
+          content: 1,
+          createdAt: 1,
+          image: 1,
+          author: {
+            $arrayElemAt: [ '$author', 0 ]
+          },
+        }
+      },
+      {
+        $project: {
+          title: 1,
+          content: 1,
+          createdAt: 1,
+          image: 1,
+          'author.createdAt': 1,
+          'author.firstName': 1,
+          'author.lastName': 1
+        }
+      },
+
+      {
+        $match: {
+          $or: [
+            { 'author.firstName': regex },
+            { 'author.lastName': regex },
+            { title: regex },
+            { content: regex }
+          ]
+        }
+      },
+    ];
+
+    const aggregateFiltersWithPagination =
+      aggregateFilters.concat([
+        {
+          $skip: skipAmount
+        },
+
+        {
+          $limit: parseInt(perPage)
+        },
+      ]);
+
+    const posts = await Post.aggregate(aggregateFiltersWithPagination);
+
+    const aggregateFiltersWithCount =
+      aggregateFilters.concat([
+        {
+          $count: 'total'
+        }
+      ]);
+
+    const total = await Post.aggregate(aggregateFiltersWithCount);
     response.send({
       posts: posts,
-      total: total
+      total: total[0].total
     });
+
   } catch(error) {
     console.log(error);
     next(error);
